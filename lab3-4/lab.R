@@ -81,35 +81,35 @@ t.test(data.noout$whole_weight, data.noout$length)
 
 t.test(data.noout$whole_weight, data.noout$diameter)
 
-
+par(mfrow=c(1,4))
 # Строим линейные зависимости
-linear.model.1 <- lm (whole_weight ~ length, data=data.noout)
-linear.model.1
-summary(linear.model.1)
 
-par(mfrow=c(1,1))
+# Зависимость диаметра от веса
+lm_diameter_weight <- lm (whole_weight~diameter, data=data.noout)
+plot(lm_diameter_weight)
+summary(lm_diameter_weight)
 
-plot(data.noout$whole_weight, data.noout$length)
-abline(linear.model.1)
+# Зависимость веса от длины
+lm_weight_length <- lm(whole_weight~length, data = data.noout)
+plot(lm_weight_length)
+summary(lm_weight_length)
 
-# Делим массив данных на 2 случайные части
+# Делим массив данных на 2
 odds <- seq(1, nrow(data.noout), by=2)
-data.in <- data.noout[odds,]
-data.out <- data.noout[-odds,]
+data.train <- data.noout[odds,]
+data.test <- data.noout[-odds,]
 
 # Создаем модель для прогноза
-linear.model.half <- lm (data.in$whole_weight ~ data.in$length, data=data.in)
+linear.model.half <- lm (whole_weight ~ length, data=data.train)
 summary (linear.model.half)
 
+par(mfrow=c(1,2))
+
 # Прогноз 
-data.predict <- predict (linear.model.half)
-cor (data.in$whole_weight, data.predict)
-plot (data.in$whole_weight, data.predict)
+data_predict <- predict (linear.model.half)
+cor (data.train$whole_weight, data_predict)
+plot (data.train$whole_weight, data_predict, main = "Тренировочные данные")
 
-data.predict.out <- predict (linear.model.half, data.out)
-cor (data.out$whole_weight, data.predict.out)
-plot (data.out$whole_weight, data.predict.out)
-
-# Предикты я сделал, а что делать дальше и как их сравнивать я не знаю. Если узнаю обновлю файлик.
-# Но если вы это читаете, то я не узнал.
-
+data_predict_out <- predict(linear.model.half, data.test)
+cor(data.test$whole_weight, data_predict_out)
+plot (data.train$whole_weight, data_predict_out, main = "Тестовые данные")
